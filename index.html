@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thousand Year Old Vampire — Character Record</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER
+  ============================================================ -->
+  <header id="site-header">
+    <div class="header-inner">
+      <div class="header-name-wrap">
+        <label for="character-name" class="sr-only">Character Name</label>
+        <input
+          id="character-name"
+          type="text"
+          class="character-name-input"
+          placeholder="Enter your name…"
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
+      <div class="header-prompt-wrap">
+        <label for="prompt-number" class="prompt-label">Current Prompt</label>
+        <input
+          id="prompt-number"
+          type="number"
+          class="prompt-input"
+          min="1"
+          placeholder="—"
+        >
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       RESOLUTION MODE OVERLAY
+       Shown when the player tries to add a 6th Memory
+  ============================================================ -->
+  <div id="resolution-overlay" class="resolution-overlay hidden" aria-live="assertive" role="alert">
+    <p class="resolution-text">Your oldest self must be forgotten. Choose a memory to lose.</p>
+  </div>
+
+  <!-- ============================================================
+       MAIN PLAY AREA
+  ============================================================ -->
+  <main id="main-content">
+
+    <!-- MEMORIES -->
+    <section id="section-memories" class="play-section">
+      <div class="section-header">
+        <h2>Memories</h2>
+        <button id="btn-add-memory" class="btn-add" type="button">+ Add Memory</button>
+      </div>
+      <div id="memories-list" class="memories-list">
+        <!-- Memory cards injected here by JS -->
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="section-skills" class="play-section">
+      <div class="section-header">
+        <h2>Skills</h2>
+      </div>
+      <div id="skills-list" class="entry-list">
+        <!-- Skill entries injected here by JS -->
+      </div>
+      <div class="add-entry-row">
+        <input id="new-skill-input" type="text" class="add-entry-input" placeholder="New skill…" autocomplete="off">
+        <button id="btn-add-skill" class="btn-add" type="button">Add</button>
+      </div>
+    </section>
+
+    <!-- RESOURCES -->
+    <section id="section-resources" class="play-section">
+      <div class="section-header">
+        <h2>Resources</h2>
+      </div>
+      <div id="resources-list" class="entry-list">
+        <!-- Resource entries injected here by JS -->
+      </div>
+      <div class="add-entry-row">
+        <input id="new-resource-input" type="text" class="add-entry-input" placeholder="New resource…" autocomplete="off">
+        <button id="btn-add-resource" class="btn-add" type="button">Add</button>
+      </div>
+    </section>
+
+    <!-- CHARACTERS -->
+    <section id="section-characters" class="play-section">
+      <div class="section-header">
+        <h2>Characters</h2>
+      </div>
+      <div id="characters-list" class="characters-list">
+        <!-- Character cards injected here by JS -->
+      </div>
+      <div class="add-entry-row">
+        <input id="new-character-input" type="text" class="add-entry-input" placeholder="New character name…" autocomplete="off">
+        <button id="btn-add-character" class="btn-add" type="button">Add</button>
+      </div>
+    </section>
+
+    <!-- MARKS -->
+    <section id="section-marks" class="play-section">
+      <div class="section-header">
+        <h2>Marks</h2>
+      </div>
+      <div id="marks-list" class="entry-list">
+        <!-- Mark entries injected here by JS -->
+      </div>
+      <div class="add-entry-row">
+        <input id="new-mark-input" type="text" class="add-entry-input" placeholder="New mark…" autocomplete="off">
+        <button id="btn-add-mark" class="btn-add" type="button">Add</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       ARCHIVE
+  ============================================================ -->
+  <footer id="archive-footer">
+    <button id="btn-toggle-archive" class="btn-toggle-archive" type="button" aria-expanded="false">
+      Show Archive
+    </button>
+    <div id="archive-drawer" class="archive-drawer hidden" aria-label="Archive">
+
+      <div class="archive-group" id="archive-memories-group">
+        <h3 class="archive-group-title">Memories</h3>
+        <div id="archive-memories-list" class="archive-list">
+          <!-- Archived memories injected here by JS -->
+        </div>
+      </div>
+
+      <div class="archive-group" id="archive-skills-group">
+        <h3 class="archive-group-title">Skills</h3>
+        <div id="archive-skills-list" class="archive-list">
+          <!-- Archived skills injected here by JS -->
+        </div>
+      </div>
+
+      <div class="archive-group" id="archive-resources-group">
+        <h3 class="archive-group-title">Resources</h3>
+        <div id="archive-resources-list" class="archive-list">
+          <!-- Archived resources injected here by JS -->
+        </div>
+      </div>
+
+      <div class="archive-group" id="archive-characters-group">
+        <h3 class="archive-group-title">Characters</h3>
+        <div id="archive-characters-list" class="archive-list">
+          <!-- Archived characters injected here by JS -->
+        </div>
+      </div>
+
+      <div class="archive-group" id="archive-marks-group">
+        <h3 class="archive-group-title">Marks</h3>
+        <div id="archive-marks-list" class="archive-list">
+          <!-- Archived marks injected here by JS -->
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
