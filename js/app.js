@@ -82,6 +82,11 @@ function flashSaveIndicator() {
   saveIndicatorTimer = setTimeout(() => indicator.classList.remove('visible'), 2000);
 }
 
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
 function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -285,12 +290,13 @@ function renderEntryList(listId, items, onUpdate) {
     const row = document.createElement('div');
     row.className = 'entry-row';
 
-    const input = document.createElement('input');
-    input.type = 'text';
+    const input = document.createElement('textarea');
     input.className = 'entry-text' + (item.crossed ? ' crossed' : '');
+    input.rows = 1;
     input.value = item.text;
     input.addEventListener('input', () => {
       item.text = input.value;
+      autoResize(input);
       save();
       onUpdate();
     });
@@ -327,6 +333,7 @@ function renderEntryList(listId, items, onUpdate) {
     row.appendChild(input);
     row.appendChild(actions);
     list.appendChild(row);
+    requestAnimationFrame(() => autoResize(input));
   });
 }
 
@@ -374,13 +381,14 @@ function renderCharacters() {
       save();
     });
 
-    const descInput = document.createElement('input');
-    descInput.type = 'text';
+    const descInput = document.createElement('textarea');
     descInput.className = 'character-desc-field';
+    descInput.rows = 1;
     descInput.placeholder = 'A brief note…';
     descInput.value = char.desc;
     descInput.addEventListener('input', () => {
       char.desc = descInput.value;
+      autoResize(descInput);
       save();
     });
 
@@ -433,6 +441,7 @@ function renderCharacters() {
     card.appendChild(toggles);
     card.appendChild(actions);
     list.appendChild(card);
+    requestAnimationFrame(() => autoResize(descInput));
   });
 }
 
