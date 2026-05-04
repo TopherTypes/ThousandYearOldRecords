@@ -8,6 +8,7 @@ const STORAGE_KEY = 'tyov_character';
 
 const MEMORY_MAX      = 5;
 const EXPERIENCE_MAX  = 3;
+const DIARY_MEMORY_MAX = 4;
 
 function blankState() {
   return {
@@ -19,12 +20,14 @@ function blankState() {
     resources:    [],
     characters:   [],
     marks:        [],
+    diaries:      [],
     archive: {
       memories:   [],
       skills:     [],
       resources:  [],
       characters: [],
       marks:      [],
+      diaries:    [],
     },
   };
 }
@@ -53,6 +56,10 @@ function blankMark(text = '') {
   return { id: uid(), text };
 }
 
+function blankDiary(title = '') {
+  return { id: uid(), title, crossed: false, memories: [] };
+}
+
 let state = blankState();
 let resolutionMode = false;
 let saveIndicatorTimer = null;
@@ -78,7 +85,11 @@ function flashSaveIndicator() {
 function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) state = JSON.parse(raw);
+    if (raw) {
+      state = JSON.parse(raw);
+      if (!state.diaries) state.diaries = [];
+      if (!state.archive.diaries) state.archive.diaries = [];
+    }
   } catch (_) {
     state = blankState();
   }
@@ -426,6 +437,177 @@ function renderCharacters() {
 }
 
 // ============================================================
+// RENDER — DIARIES
+// ============================================================
+
+function renderDiaries() {
+  const list = $('#diaries-list');
+  list.innerHTML = '';
+
+  state.diaries.forEach((diary) => {
+    const card = document.createElement('div');
+    card.className = 'diary-card' + (diary.crossed ? ' crossed' : '');
+    card.dataset.id = diary.id;
+
+    // Title row
+    const titleRow = document.createElement('div');
+    titleRow.className = 'diary-title-row';
+
+    const titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    titleInput.className = 'diary-title-input' + (diary.crossed ? ' crossed' : '');
+    titleInput.placeholder = 'Name this diary…';
+    titleInput.value = diary.title;
+    titleInput.addEventListener('input', () => {
+      diary.title = titleInput.value;
+      save();
+    });
+
+    const actions = document.createElement('div');
+    actions.className = 'diary-actions';
+
+    const strikeBtn = document.createElement('button');
+    strikeBtn.className = 'btn-icon btn-strikethrough' + (diary.crossed ? ' active' : '');
+    strikeBtn.title = diary.crossed ? 'Restore' : 'Mark as lost';
+    strikeBtn.textContent = '—';
+    strikeBtn.addEventListener('click', () => {
+      diary.crossed = !diary.crossed;
+      save();
+      renderDiaries();
+    });
+
+    const archiveBtn = document.createElement('button');
+    archiveBtn.className = 'btn-icon btn-archive';
+    archiveBtn.title = 'Archive this diary';
+    archiveBtn.textContent = '✕';
+    archiveBtn.addEventListener('click', () => archiveDiary(diary.id));
+
+    actions.appendChild(strikeBtn);
+    actions.appendChild(archiveBtn);
+    titleRow.appendChild(titleInput);
+    titleRow.appendChild(actions);
+    card.appendChild(titleRow);
+
+    // Read-only memories
+    if (diary.memories.length > 0) {
+      const memoriesContainer = document.createElement('div');
+      memoriesContainer.className = 'diary-memories-container';
+      diary.memories.forEach((memory) => {
+        memoriesContainer.appendChild(buildDiaryMemoryBlock(memory));
+      });
+      card.appendChild(memoriesContainer);
+    }
+
+    // Add memory or full message
+    if (diary.memories.length >= DIARY_MEMORY_MAX) {
+      const fullMsg = document.createElement('p');
+      fullMsg.className = 'diary-full-msg';
+      fullMsg.textContent = 'This diary is full.';
+      card.appendChild(fullMsg);
+    } else {
+      card.appendChild(buildAddMemoryToDiary(diary));
+    }
+
+    list.appendChild(card);
+  });
+}
+
+function buildDiaryMemoryBlock(memory) {
+  const block = document.createElement('div');
+  block.className = 'diary-memory-block';
+
+  const title = document.createElement('p');
+  title.className = 'diary-memory-title';
+  title.textContent = memory.title || '(untitled memory)';
+  block.appendChild(title);
+
+  memory.experiences.forEach((exp) => {
+    if (!exp.text) return;
+    const item = document.createElement('p');
+    item.className = 'diary-memory-experience';
+    item.textContent = exp.text;
+    block.appendChild(item);
+  });
+
+  return block;
+}
+
+function buildAddMemoryToDiary(diary) {
+  const row = document.createElement('div');
+  row.className = 'diary-add-memory-row';
+
+  if (!state.memories.length) {
+    const msg = document.createElement('p');
+    msg.className = 'diary-no-memories-msg';
+    msg.textContent = 'No memories to add.';
+    row.appendChild(msg);
+    return row;
+  }
+
+  const select = document.createElement('select');
+  select.className = 'diary-memory-select';
+
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = 'Choose a memory…';
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  select.appendChild(placeholder);
+
+  state.memories.forEach((mem) => {
+    const opt = document.createElement('option');
+    opt.value = mem.id;
+    opt.textContent = mem.title || '(untitled memory)';
+    select.appendChild(opt);
+  });
+
+  const addBtn = document.createElement('button');
+  addBtn.className = 'btn-add';
+  addBtn.textContent = 'Add';
+  addBtn.addEventListener('click', () => {
+    const selectedId = select.value;
+    if (!selectedId) return;
+    addMemoryToDiary(diary.id, selectedId);
+  });
+
+  row.appendChild(select);
+  row.appendChild(addBtn);
+  return row;
+}
+
+function addMemoryToDiary(diaryId, memoryId) {
+  const diary = state.diaries.find(d => d.id === diaryId);
+  if (!diary || diary.memories.length >= DIARY_MEMORY_MAX) return;
+
+  const idx = state.memories.findIndex(m => m.id === memoryId);
+  if (idx === -1) return;
+
+  const [memory] = state.memories.splice(idx, 1);
+  diary.memories.push(memory);
+  save();
+  renderMemories();
+  renderDiaries();
+}
+
+function archiveDiary(id) {
+  const idx = state.diaries.findIndex(d => d.id === id);
+  if (idx === -1) return;
+  const [removed] = state.diaries.splice(idx, 1);
+  state.archive.diaries.push(removed);
+  save();
+  renderDiaries();
+  renderArchive();
+}
+
+function bindAddDiary() {
+  $('#btn-add-diary').addEventListener('click', () => {
+    state.diaries.push(blankDiary());
+    save();
+    renderDiaries();
+  });
+}
+
+// ============================================================
 // RENDER — ARCHIVE
 // ============================================================
 
@@ -435,6 +617,7 @@ function renderArchive() {
   renderArchiveList('#archive-resources-list',  state.archive.resources);
   renderArchiveCharacters();
   renderArchiveList('#archive-marks-list',      state.archive.marks);
+  renderArchiveDiaries();
 }
 
 function renderArchiveMemories() {
@@ -512,6 +695,48 @@ function renderArchiveCharacters() {
     row.appendChild(name);
     row.appendChild(meta);
     list.appendChild(row);
+  });
+}
+
+function renderArchiveDiaries() {
+  const list = $('#archive-diaries-list');
+  list.innerHTML = '';
+
+  if (!state.archive.diaries.length) {
+    list.innerHTML = '<p class="archive-empty">No diaries lost yet.</p>';
+    return;
+  }
+
+  state.archive.diaries.forEach((diary) => {
+    const card = document.createElement('div');
+    card.className = 'archive-diary-card';
+
+    const titleEl = document.createElement('p');
+    titleEl.className = 'archive-diary-title';
+    titleEl.textContent = diary.title || '(untitled diary)';
+    card.appendChild(titleEl);
+
+    diary.memories.forEach((memory) => {
+      const memBlock = document.createElement('div');
+      memBlock.className = 'archive-diary-memory';
+
+      const memTitle = document.createElement('p');
+      memTitle.className = 'archive-memory-title';
+      memTitle.textContent = memory.title || '(untitled memory)';
+      memBlock.appendChild(memTitle);
+
+      memory.experiences.forEach((exp) => {
+        if (!exp.text) return;
+        const item = document.createElement('p');
+        item.className = 'archive-experience-item';
+        item.textContent = exp.text;
+        memBlock.appendChild(item);
+      });
+
+      card.appendChild(memBlock);
+    });
+
+    list.appendChild(card);
   });
 }
 
@@ -661,6 +886,7 @@ function init() {
   renderResources();
   renderCharacters();
   renderMarks();
+  renderDiaries();
   renderArchive();
 
   bindAddMemory();
@@ -668,6 +894,7 @@ function init() {
   bindAddResource();
   bindAddCharacter();
   bindAddMark();
+  bindAddDiary();
   bindArchiveToggle();
 
   $('#btn-save').addEventListener('click', save);
