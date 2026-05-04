@@ -191,6 +191,7 @@ function renderMemories() {
     }
 
     list.appendChild(card);
+    $$('.experience-input', card).forEach(autoResize);
   });
 }
 
@@ -208,7 +209,6 @@ function buildExperienceRow(memory, exp) {
     autoResize(textarea);
     save();
   });
-  autoResize(textarea);
 
   const actionsDiv = document.createElement('div');
   actionsDiv.className = 'experience-actions';
