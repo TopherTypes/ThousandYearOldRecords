@@ -55,6 +55,7 @@ function blankMark(text = '') {
 
 let state = blankState();
 let resolutionMode = false;
+let saveIndicatorTimer = null;
 
 // ============================================================
 // PERSISTENCE
@@ -62,6 +63,16 @@ let resolutionMode = false;
 
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  flashSaveIndicator();
+}
+
+function flashSaveIndicator() {
+  const indicator = $('#save-indicator');
+  if (!indicator) return;
+  indicator.textContent = 'Saved';
+  indicator.classList.add('visible');
+  clearTimeout(saveIndicatorTimer);
+  saveIndicatorTimer = setTimeout(() => indicator.classList.remove('visible'), 2000);
 }
 
 function load() {
@@ -658,6 +669,8 @@ function init() {
   bindAddCharacter();
   bindAddMark();
   bindArchiveToggle();
+
+  $('#btn-save').addEventListener('click', save);
 }
 
 document.addEventListener('DOMContentLoaded', init);
