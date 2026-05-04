@@ -610,6 +610,162 @@ button {
 }
 
 /* ============================================================
+   DIARIES
+============================================================ */
+#section-diaries {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.diaries-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.diary-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: border-color 0.2s;
+}
+
+.diary-card:hover {
+  border-color: var(--color-accent);
+}
+
+.diary-card.crossed {
+  opacity: 0.55;
+}
+
+.diary-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.diary-title-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  color: var(--color-text);
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-style: italic;
+  padding: 0.1rem 0.2rem;
+  min-width: 0;
+  transition: border-color 0.2s;
+}
+
+.diary-title-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.diary-title-input:focus {
+  outline: none;
+  border-bottom-color: var(--color-accent);
+}
+
+.diary-title-input.crossed {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+.diary-actions {
+  display: flex;
+  gap: 0.15rem;
+  flex-shrink: 0;
+}
+
+.diary-memories-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.diary-memory-block {
+  background-color: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.75rem;
+  opacity: 0.85;
+}
+
+.diary-memory-title {
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--color-text-dim);
+  margin-bottom: 0.3rem;
+}
+
+.diary-memory-experience {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--color-border);
+  line-height: 1.5;
+  margin-top: 0.2rem;
+}
+
+.diary-add-memory-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.diary-memory-select {
+  flex: 1;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  padding: 0.2rem 0.4rem;
+  min-width: 0;
+  transition: border-color 0.2s;
+}
+
+.diary-memory-select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.diary-full-msg,
+.diary-no-memories-msg {
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--color-text-dim);
+}
+
+.archive-diary-card {
+  background-color: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  opacity: 0.7;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.archive-diary-title {
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--color-text-dim);
+}
+
+.archive-diary-memory {
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--color-border);
+}
+
+/* ============================================================
    ARCHIVE FOOTER
 ============================================================ */
 #archive-footer {
